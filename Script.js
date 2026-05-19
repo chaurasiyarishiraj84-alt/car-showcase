@@ -3,7 +3,7 @@
 //  All frontend logic: fetch, filter, render, panel
 // ══════════════════════════════════════════════════
 
-const API_BASE = "http://localhost:3000/api";
+const DATA_FILE = "./cars.json";
 
 // ── STATE ────────────────────────────────────────
 let allCars = [];
@@ -34,10 +34,11 @@ window.addEventListener("DOMContentLoaded", () => {
 async function fetchCars() {
     showLoading(true);
     try {
-        const res = await fetch(`${API_BASE}/cars`);
+        const res = await fetch(DATA_FILE);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        allCars = json.data || [];
+
+        allCars = await res.json();
+
         renderGrid(allCars);
         showLoading(false);
     } catch (err) {
@@ -50,10 +51,8 @@ async function fetchCars() {
 // ── API: FETCH SINGLE CAR ─────────────────────────
 async function fetchCarById(id) {
     try {
-        const res = await fetch(`${API_BASE}/cars/${id}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        return json.data;
+        const car = allCars.find((c) => c.id === id);
+        return car || null;
     } catch (err) {
         console.error("Failed to fetch car:", err);
         return null;
